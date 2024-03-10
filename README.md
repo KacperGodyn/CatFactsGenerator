@@ -1,7 +1,7 @@
 ## Cat Facts Generator
 
-Simple web app to generate random cat's facts using API from 
-### `https://catfact.ninja/fact`
+Simple web app build with React to generate random cat's facts using API from\
+(https://catfact.ninja/fact)
 
 ## `npm start`
 
