@@ -1,0 +1,31 @@
+# Etap 1: Budowanie aplikacji
+FROM node:14 AS build
+
+WORKDIR /app
+
+# Kopiuj pliki zależności
+COPY package*.json ./
+
+# Instaluj zależności
+RUN npm install
+
+# Kopiuj resztę plików aplikacji
+COPY . .
+
+# Zbuduj aplikację React
+RUN npm run build
+
+# Etap 2: Serwowanie aplikacji za pomocą Nginx
+FROM nginx:alpine
+
+# Usuń domyślną stronę Nginx
+RUN rm -rf /usr/share/nginx/html/*
+
+# Kopiuj zbudowane pliki z poprzedniego etapu
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Eksponuj port 80
+EXPOSE 80
+
+# Uruchom Nginx
+CMD ["nginx", "-g", "daemon off;"]
