@@ -1,0 +1,42 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Build Docker image
+      run: |
+        docker build -t my-app .
+
+    - name: Test Docker image
+      run: |
+        docker run -d -p 80:80 --name my-app-container my-app
+        sleep 10
+        curl -f http://localhost:80 || exit 1
+        docker stop my-app-container
+        docker rm my-app-container
